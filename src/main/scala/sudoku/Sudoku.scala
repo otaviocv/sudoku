@@ -49,7 +49,11 @@ class Sudoku(val rawBoard: String) {
   }
   
   def checkColumnDuplicates(board: Array[Array[Int]], col: Int): Boolean = {
-    (board.map(_(col)).toSet - 0).size == 9
+    (presentValuesColumn(board, col)).size == 9
+  }
+
+  def presentValuesColumn(board: Array[Array[Int]], col: Int): Set[Int] = {
+    board.map(_(col)).toSet - 0
   }
 
   def checkRowSum(board: Array[Array[Int]], row: Int): Boolean = {
@@ -57,7 +61,11 @@ class Sudoku(val rawBoard: String) {
   }
 
   def checkRowDuplicates(board: Array[Array[Int]], row: Int): Boolean = {
-    (board(row).toSet - 0).size == 9
+    presentValuesRow(board, row).size == 9
+  }
+
+  def presentValuesRow(board: Array[Array[Int]], row: Int): Set[Int] = {
+    board.map(_(row)).toSet - 0
   }
 
   def checkBoxSum(board: Array[Array[Int]], row: Int, col: Int): Boolean = {
@@ -70,21 +78,61 @@ class Sudoku(val rawBoard: String) {
 
   def checkBoxDuplicates(board: Array[Array[Int]], row: Int,
                          col: Int): Boolean = {
+    presentValuesBox(board, row, col).size == 9
+  }
+
+  def presentValuesBox(board: Array[Array[Int]], row: Int,
+                       col: Int): Set[Int] = {
     val row_i: Int = row - row % 3
     val col_i: Int = col - col % 3
     board.slice(row_i, row_i + 3)
          .foldLeft(Set[Int]())(
            (currentSet, otherArray) => {
         currentSet ++ otherArray.slice(col_i, col_i + 3).toSet
-      }
-    ).size == 9
+      } - 0)
   }
 
-  def solve() = ???
+  def solve(board: Array[Array[Int]]) = ???
 
-  def solveEasy() = ???
+  def solveEasy(board: Array[Array[Int]]): Array[Array[Int]] = {
 
-  def possibleNumbers(row: Int, col: Int): Set[Int] = ???
+    def solveEasyRemaining(board: Array[Array[Int]], i: Int,
+                           j: Int): Array[Array[Int]] = {
+      if (j == 9) board
+      else if (i == 9) {
+        solveEasyRemaining(board, 0, j+1)
+      } else {
+        val newBoard = solveEasyPosition(board, i, j)
+        println(i)
+        println(j)
+        println(newBoard.map(_.mkString(" ")).mkString("\n"))
+        println("---")
+        solveEasyRemaining(newBoard, i+1, j)
+      }
+    }
+
+    solveEasyRemaining(board, 0, 0)
+  } 
+
+  def solveEasyPosition(board: Array[Array[Int]], i: Int, j: Int): Array[Array[Int]] = { 
+    if (board(i)(j) != 0) board
+    else {
+      val possibleNumbersSet: Set[Int] = possibleNumbers(board, i, j)
+      if (possibleNumbersSet.size == 1) {
+        board(i)(j) = possibleNumbersSet.head
+      }
+    }
+    board
+  }
+
+  def possibleNumbers(board: Array[Array[Int]], row: Int,
+                      col: Int): Set[Int] = {
+      val possibleValues = (1 to 9).toSet
+      possibleValues --
+      presentValuesColumn(board, col) --
+      presentValuesRow(board, row) --
+      presentValuesBox(board, col, row)
+  }
 
   override def toString: String = board.map(_.mkString(" ")).mkString("\n")
 

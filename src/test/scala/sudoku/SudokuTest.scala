@@ -69,6 +69,13 @@ class SudokuTest extends FunSuite {
     }
   }
 
+  test("test unsolved easy solver") {
+    new Sudoku(unsolvedBoard) {
+      val solved = solveEasy(board)
+      println(solved.map(_.mkString(" ")).mkString("\n"))
+    }
+  }
+
   val solvedBoard = 
     """8 4 5 6 3 2 1 7 9
       |7 3 2 9 1 8 6 5 4
