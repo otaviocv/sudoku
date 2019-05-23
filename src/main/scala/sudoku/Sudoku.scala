@@ -65,7 +65,7 @@ class Sudoku(val rawBoard: String) {
   }
 
   def presentValuesRow(board: Array[Array[Int]], row: Int): Set[Int] = {
-    board.map(_(row)).toSet - 0
+    board(row).toSet - 0
   }
 
   def checkBoxSum(board: Array[Array[Int]], row: Int, col: Int): Boolean = {
@@ -83,8 +83,11 @@ class Sudoku(val rawBoard: String) {
 
   def presentValuesBox(board: Array[Array[Int]], row: Int,
                        col: Int): Set[Int] = {
+    println("   finding present box values")
+    println(s"   looking for box of pos $row $col")
     val row_i: Int = row - row % 3
     val col_i: Int = col - col % 3
+    println(s"   starting in pos $row_i $col_i")
     board.slice(row_i, row_i + 3)
          .foldLeft(Set[Int]())(
            (currentSet, otherArray) => {
@@ -95,23 +98,28 @@ class Sudoku(val rawBoard: String) {
   def solve(board: Array[Array[Int]]) = ???
 
   def solveEasy(board: Array[Array[Int]]): Array[Array[Int]] = {
+    println("solveEasy")
 
     def solveEasyRemaining(board: Array[Array[Int]], i: Int,
                            j: Int): Array[Array[Int]] = {
+                             println(s"sovling pos $i $j")
       if (j == 9) board
       else if (i == 9) {
         solveEasyRemaining(board, 0, j+1)
       } else {
+        println("old board:")
+        println(board.map(_.mkString(" ")).mkString("\n"))
         val newBoard = solveEasyPosition(board, i, j)
-        println(i)
-        println(j)
+        println("new board:")
         println(newBoard.map(_.mkString(" ")).mkString("\n"))
-        println("---")
         solveEasyRemaining(newBoard, i+1, j)
       }
     }
 
-    solveEasyRemaining(board, 0, 0)
+    val newBoard1: Array[Array[Int]] = solveEasyRemaining(board, 0, 0)
+    val newBoard2: Array[Array[Int]] = solveEasyRemaining(newBoard1, 0, 0)
+    if (newBoard1 != newBoard2) solveEasy(newBoard2)
+    else newBoard2
   } 
 
   def solveEasyPosition(board: Array[Array[Int]], i: Int, j: Int): Array[Array[Int]] = { 
@@ -119,6 +127,9 @@ class Sudoku(val rawBoard: String) {
     else {
       val possibleNumbersSet: Set[Int] = possibleNumbers(board, i, j)
       if (possibleNumbersSet.size == 1) {
+        println("solveEasyPosition step")
+        println(s"filling in line $i and col $j the value")
+        println(possibleNumbersSet.head)
         board(i)(j) = possibleNumbersSet.head
       }
     }
@@ -128,10 +139,26 @@ class Sudoku(val rawBoard: String) {
   def possibleNumbers(board: Array[Array[Int]], row: Int,
                       col: Int): Set[Int] = {
       val possibleValues = (1 to 9).toSet
-      possibleValues --
-      presentValuesColumn(board, col) --
-      presentValuesRow(board, row) --
-      presentValuesBox(board, col, row)
+      val presentCol = presentValuesColumn(board, col)
+      val presentRow = presentValuesRow(board, row)
+      val presentBox = presentValuesBox(board, col, row)
+      val presentValues = presentCol ++ presentRow ++ presentBox
+      println("v-- possible")
+      println(possibleValues)
+      println("v-- present col")
+      println(presentCol)
+      println("v-- present row")
+      println(presentRow)
+      println("v-- present box")
+      println(presentBox)
+      println("v-- present unioun")
+      println(presentValues)
+      println("V-- difference")
+      println(possibleValues -- presentValues)
+      println("V-- size")
+      println((possibleValues -- presentValues).size)
+      println("---")
+      possibleValues -- presentValues
   }
 
   override def toString: String = board.map(_.mkString(" ")).mkString("\n")
