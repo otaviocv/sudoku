@@ -10,18 +10,14 @@ class SudokuNorvig(val rawGrid: String) {
   val rows: List[Char] = "ABCDEFGHI".toList
   val cols: List[Char] = digits
 
-  val rowsSquares: List[List[Char]] = List("ABC".toList) ++
-    List("DEF".toList) ++
-    List("GHI".toList)
+  val rowsSquares: List[List[Char]] = List("ABC".toList) ++ List("DEF".toList) ++ List("GHI".toList)
 
-  val colsSquares: List[List[Char]] = List("123".toList) ++
-    List("456".toList) ++
-    List("789".toList)
+  val colsSquares: List[List[Char]] = List("123".toList) ++ List("456".toList) ++ List("789".toList)
 
   val squares: List[(Char, Char)] = cross(rows, cols)
   val unitslist: List[List[(Char, Char)]] = 
     cols.map(c => cross(rows, List(c))) ++ 
-    rows.map(r => cross(cols, List(r))) ++
+    rows.map(r => cross(List(r), cols)) ++
     rowsSquares.flatMap(x => colsSquares.map(y => cross(x, y)))
 
   val units: Map[(Char, Char), List[List[(Char, Char)]]] = {
@@ -38,6 +34,19 @@ class SudokuNorvig(val rawGrid: String) {
       })
   }
 
-  def parseGrid(rawGrid: String): Map[String, String] = ???
+  def gridValues(rawGrid: String): Map[(Char, Char), Char] = {
+    cleanChars(rawGrid).foldLeft(Map[(Char, Char), Char]())((map, c) => { 
+      squares.foldLeft(map)((newMap, s) => {
+        newMap + (s -> c)
+      })
+    })
+  }
 
+  def cleanChars(rawGrid: String): List[Char] = {
+    rawGrid.foldLeft(List[Char]())((list, c) => {
+      if (digits.contains(c) || c == '0' || c == '.') {
+        list :+ c
+      } else list
+    })
+  }
 }
