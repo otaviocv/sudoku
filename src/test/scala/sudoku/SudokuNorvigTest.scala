@@ -32,6 +32,14 @@ class SudokuNorvigTest extends FunSuite {
     }
   }
 
+  test("Test newValues size for each square is 9") {
+    new SudokuNorvig("") {
+      newValues.keys.map(k => {
+        assert(newValues(k).size == 9)
+      })
+    }
+  }
+
   test("Test C2 units") {
     new SudokuNorvig("") {
       assert(
@@ -64,15 +72,8 @@ class SudokuNorvigTest extends FunSuite {
     }
   }
 
-  test("Test clean chars 1") {
-    val sudokuGame = "4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......"
-    new SudokuNorvig("") {
-      assert(cleanChars(sudokuGame).length == 81)
-    }
-  }
-
-  test("Test clean chars 2") {
-    val sudokuGame = """
+  val simpleSudokuGame = "4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......"
+  val matrixSudokuGame = """
 400000805
 030000000
 000700000
@@ -83,13 +84,7 @@ class SudokuNorvigTest extends FunSuite {
 500200000
 104000000
 """
-    new SudokuNorvig("") {
-      assert(cleanChars(sudokuGame).length == 81)
-    }
-  }
-
-  test("Test clean chars 3") {
-    val sudokuGame = """
+  val prettySudokuGame = """
 4 . . |. . . |8 . 5 
 . 3 . |. . . |. . . 
 . . . |7 . . |. . . 
@@ -102,33 +97,51 @@ class SudokuNorvigTest extends FunSuite {
 5 . . |2 . . |. . . 
 1 . 4 |. . . |. . . 
 """
+
+  test("Test clean chars 1") {
     new SudokuNorvig("") {
-      val cleanedChars = cleanChars(sudokuGame)
-      println(cleanedChars)
+      assert(cleanChars(simpleSudokuGame).length == 81)
+    }
+  }
+
+  test("Test clean chars 2") {
+    new SudokuNorvig("") {
+      assert(cleanChars(matrixSudokuGame).length == 81)
+    }
+  }
+
+  test("Test clean chars 3") {
+    new SudokuNorvig("") {
+      val cleanedChars = cleanChars(prettySudokuGame)
       assert(cleanedChars.length == 81)
     }
   }
 
   test("Test grid values") {
-    val sudokuGame = """
-4 . . |. . . |8 . 5 
-. 3 . |. . . |. . . 
-. . . |7 . . |. . . 
-------+------+------
-. 2 . |. . . |. 6 . 
-. . . |. 8 . |4 . . 
-. . . |. 1 . |. . . 
-------+------+------
-. . . |6 . 3 |. 7 . 
-5 . . |2 . . |. . . 
-1 . 4 |. . . |. . . 
-"""
     new SudokuNorvig("") {
-      val gridVals = gridValues(sudokuGame)
-      println(gridVals)
+      val gridVals = gridValues(prettySudokuGame)
       assert(gridVals(('A', '1')) == '4')
       assert(gridVals(('B', '2')) == '3')
       assert(gridVals(('C', '3')) == '.')
+    }
+  }
+
+  test("Test current possible values") {
+    new SudokuNorvig("") {
+      val gridVals = gridValues(prettySudokuGame)
+      val posVals = currentPossibleValues(gridVals)
+      assert(posVals(('A', '1')) == Set('4'))
+      assert(posVals(('A', '2')) == digits.toSet)
+    }
+  }
+
+  test("Test toString method") {
+    new SudokuNorvig("") {
+      val gridVals = gridValues(prettySudokuGame)
+      val posVals = currentPossibleValues(gridVals)
+      println(posVals)
+      val prettySudoku = toString(posVals)
+      println(prettySudoku)
     }
   }
 
