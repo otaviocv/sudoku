@@ -64,4 +64,72 @@ class SudokuNorvigTest extends FunSuite {
     }
   }
 
+  test("Test clean chars 1") {
+    val sudokuGame = "4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......"
+    new SudokuNorvig("") {
+      assert(cleanChars(sudokuGame).length == 81)
+    }
+  }
+
+  test("Test clean chars 2") {
+    val sudokuGame = """
+400000805
+030000000
+000700000
+020000060
+000080400
+000010000
+000603070
+500200000
+104000000
+"""
+    new SudokuNorvig("") {
+      assert(cleanChars(sudokuGame).length == 81)
+    }
+  }
+
+  test("Test clean chars 3") {
+    val sudokuGame = """
+4 . . |. . . |8 . 5 
+. 3 . |. . . |. . . 
+. . . |7 . . |. . . 
+------+------+------
+. 2 . |. . . |. 6 . 
+. . . |. 8 . |4 . . 
+. . . |. 1 . |. . . 
+------+------+------
+. . . |6 . 3 |. 7 . 
+5 . . |2 . . |. . . 
+1 . 4 |. . . |. . . 
+"""
+    new SudokuNorvig("") {
+      val cleanedChars = cleanChars(sudokuGame)
+      println(cleanedChars)
+      assert(cleanedChars.length == 81)
+    }
+  }
+
+  test("Test grid values") {
+    val sudokuGame = """
+4 . . |. . . |8 . 5 
+. 3 . |. . . |. . . 
+. . . |7 . . |. . . 
+------+------+------
+. 2 . |. . . |. 6 . 
+. . . |. 8 . |4 . . 
+. . . |. 1 . |. . . 
+------+------+------
+. . . |6 . 3 |. 7 . 
+5 . . |2 . . |. . . 
+1 . 4 |. . . |. . . 
+"""
+    new SudokuNorvig("") {
+      val gridVals = gridValues(sudokuGame)
+      println(gridVals)
+      assert(gridVals(('A', '1')) == '4')
+      assert(gridVals(('B', '2')) == '3')
+      assert(gridVals(('C', '3')) == '.')
+    }
+  }
+
 }
