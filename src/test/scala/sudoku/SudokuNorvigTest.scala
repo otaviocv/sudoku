@@ -34,9 +34,9 @@ class SudokuNorvigTest extends FunSuite {
 
   test("Test newValues size for each square is 9") {
     new SudokuNorvig("") {
-      newValues.keys.map(k => {
-        assert(newValues(k).size == 9)
-      })
+      puzzleValues.map({ case (k, v) => {
+        assert(v.size == 9)
+      }})
     }
   }
 
@@ -135,14 +135,25 @@ class SudokuNorvigTest extends FunSuite {
     }
   }
 
-  test("Test toString method") {
+  test("Test prettySudoku method") {
     new SudokuNorvig("") {
       val gridVals = gridValues(prettySudokuGame)
       val posVals = currentPossibleValues(gridVals)
       println(posVals)
-      val prettySudoku = toString(posVals)
-      println(prettySudoku)
+      val pSudoku = prettySudoku(posVals)
+      println(pSudoku)
     }
   }
 
+  test("Test parse grid method") {
+    new SudokuNorvig("") {
+      val gridVals = gridValues(prettySudokuGame)
+      val posVals = currentPossibleValues(gridVals)
+      println(prettySudoku(posVals))
+      println(gridVals)
+      val vals = parseGrid(prettySudokuGame)
+      println(vals)
+      println(prettySudoku(vals))
+    }
+  }
 }
